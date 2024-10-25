@@ -53,7 +53,7 @@ def run_test(
     story_lengths: list[str],
     system_prompt: SystemMessage,
     template: TemplateUserMessage,
-    model_name: str,
+    model_names: list[str],
     n_concurrent: tuple[int] = (1, 2, 4, 8),
 ):
     parameters = list(product(story_types, story_topics, story_lengths))
@@ -73,8 +73,9 @@ def run_test(
                     system_prompt,
                     template.format(length=length, topic=topic, n_words=n_words),
                 ],
-                "model": model_name,
+                "model": model,
             }
+            for model in model_names
             for length, topic, n_words in batch
         ]
         results = pqdm_t(
@@ -87,10 +88,13 @@ def run_test(
         )
         output_directory = Path(f"test/output/{n_jobs}/")
         output_directory.mkdir(parents=True, exist_ok=True)
-        for (l, t, n), response in zip(parameters, results):
+        for (l, t, n, m), response in zip(parameters, results):
             try:
                 t = base64.b64encode(t.encode()).decode("utf-8")
-                with (output_directory / f"l={l}-n={n}-t={t}.json").open("w") as f:
+                m = m.replace(":", "-").replace(" ", "-").replace("/", "-")
+                with (output_directory / f"l={l}-n={n}-m={m}-t={t}.json").open(
+                    "w"
+                ) as f:
                     json.dump(response.data, f, indent=2, ensure_ascii=False)
             except Exception as e:
                 print(
@@ -111,16 +115,21 @@ TEMPLATE = TemplateUserMessage(
     "Write a {length} story about {topic} with at least {n_words} words."
 )
 
-# MODEL_NAME = "nemotron:latest"
-MODEL_NAME = "nemotron-mini:4b-instruct-q6_K"
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("command", choices=["load", "run", "big"])
-    parser.add_argument("-m", "--model", default=MODEL_NAME, type=str)
     parser.add_argument(
-        "-j", "--n_jobs", nargs="+", default=(4, 8, 16, 32), type=int
+        "-m",
+        "--models",
+        nargs="+",
+        default=[
+            "llama3.1:8b-circlet",
+            "llama3.1:70b-circlet",
+            "reflection:circlet",
+        ],
+        type=str,
     )
+    parser.add_argument("-j", "--n_jobs", nargs="+", default=(8, 16, 32), type=int)
     args = parser.parse_args()
 
     match args.command:
@@ -133,6 +142,6 @@ if __name__ == "__main__":
                 story_lengths=PARAM_WORDS,
                 system_prompt=SYSTEM_PROMPT,
                 template=TEMPLATE,
-                model_name=args.model,
+                model_names=args.models,
                 n_concurrent=args.n_jobs,
             )

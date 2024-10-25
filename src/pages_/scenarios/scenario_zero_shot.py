@@ -1,12 +1,13 @@
+from email.message import Message
 from pathlib import Path
+from typing import Final
 
 import streamlit as st
 import yaml
-from requests import post
 
+from circlet.chat_ui import chat_interface, initialize
 from circlet.lib.chat import SystemMessage, UserMessage
-from circlet.lib.response import Response
-from pages.scenarios.base import chat_interface
+from circlet.models import LLAMA_8B
 
 st.title("Information Retrieval")
 st.header("Zero-Shot Prompting")
@@ -32,41 +33,21 @@ DOCUMENT_YAML: dict = yaml.load(
     DOCUMENT_PATH.open("r"),
     yaml.Loader,
 )
-MODEL_NAME = "llama3.1:8b-instruct-q5_K_M"
-SCENARIO_NAME = "scenario_1"
 
-initial_messages = [
+INITIAL_MESSAGES: Final[list[Message]] = [
     SystemMessage(
-        "You are a helpful assistant for Information Retrieval. Given a document and a query, you need to find the most relevant information in the document.\nDocument:\n"
-        + DOCUMENT_YAML["text"]
-    )
+        "You are a helpful assistant for Information Retrieval. Given a Document and a Query, you need to find the most relevant information in the document. Always answer to the best of your knowledge using the provided document. Do not deflect or refuse to answer questions, unless the information is not provided in the given document."
+    ),
+    UserMessage("Document:\n" + DOCUMENT_YAML["text"]),
 ]
 
+MODEL_NAME: Final[str] = LLAMA_8B.tag
+SCENARIO_NAME: Final[str] = "scenario_zero_shot"
 
-@st.cache_resource
-def initialize():
-    response = Response.process(
-        post(
-            "http://gondor.hucompute.org:11434/api/generate",
-            json={
-                "model": MODEL_NAME,
-                "keep_alive": 3600 * 24 * 5,
-            },
-            timeout=600,
-        )
-    )
-    if not response.ok():
-        raise Exception(f"Failed to initialize model for {SCENARIO_NAME}")
-    response = st.session_state.client.chat.completions.create(
-        model=MODEL_NAME, messages=initial_messages
-    )
-    return response
-
-
-print(initialize())
+print(initialize(MODEL_NAME, SCENARIO_NAME, INITIAL_MESSAGES))
 
 chat_interface(
     SCENARIO_NAME,
-    initial_messages=initial_messages,
+    initial_messages=INITIAL_MESSAGES,
     model_name=MODEL_NAME,
 )

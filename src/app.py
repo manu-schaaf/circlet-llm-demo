@@ -38,9 +38,16 @@ if "client_lookup" not in st.session_state:
 #     )
 #     st.toast("Error: ", icon="🚨")
 
-page_home = st.Page("pages_/home.py", title="Home")
+page_home = st.Page(
+    "pages_/introduction.py",
+    title="Introduction",
+)
+page_article = st.Page(
+    "pages_/example_document.py",
+    title="Example Document",
+)
 page_scenario_zero = st.Page(
-    "pages_/scenarios/scenario_zero_shot.py",
+    "pages_/scenarios/1_zero_shot.py",
     title="1. Zero-Shot Prompting",
 )
 # page_scenario_2 = st.Page(
@@ -48,21 +55,22 @@ page_scenario_zero = st.Page(
 #     title="2. Few-Shot Prompting",
 # )
 page_scenario_cot = st.Page(
-    "pages_/scenarios/scenario_cot.py",
+    "pages_/scenarios/2_chain_of_thoughts.py",
     title="2. Chain-of-Thought Prompting",
 )
 page_scenario_ff = st.Page(
-    "pages_/scenarios/scenario_free_form.py",
-    title="3. Free-Form: Design Your Own Prompt",
+    "pages_/scenarios/3_1_free_form.py",
+    title="3.1. Free-Form: Design Your Own Prompt",
 )
 page_scenario_ff_chat = st.Page(
-    "pages_/free_form_chat.py",
-    title="4. Free-Form: Chat",
+    "pages_/scenarios/3_2_free_form_chat.py",
+    title="3.2. Free-Form: Chat",
 )
 
 pg = st.navigation(
     [
         page_home,
+        page_article,
         page_scenario_zero,
         # page_scenario_2,
         page_scenario_cot,

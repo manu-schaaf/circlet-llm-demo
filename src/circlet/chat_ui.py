@@ -11,6 +11,8 @@ def chat_interface(
     initial_messages=None,
     no_reset=False,
 ):
+    print(initialize_scenario(model_name, scenario_name, initial_messages))
+
     client = st.session_state.client_lookup[model_name]
     initial_messages = initial_messages or []
     if "messages" not in st.session_state:
@@ -23,25 +25,33 @@ def chat_interface(
         reset_chat()
 
     if not no_reset:
-        st.button("Reset Chat", on_click=reset_chat)
+        st.button("Reset Chat", on_click=reset_chat, key="reset_chat_top")
 
-    messages = st.container(border=True)
+    message_container = st.container(border=True)
     for message in st.session_state.messages[scenario_name]:
-        with messages.chat_message(message["role"]):
+        with message_container.chat_message(
+            message["role"],
+            avatar=":material/settings:" if message["role"] == "system" else None,
+        ):
             if message["role"] == "system":
                 st.code(message["content"], wrap_lines=True, language="markdown")
             else:
-                st.markdown(message["content"])
+                container = st
+                if message.get("initial", False):
+                    container = st.expander(
+                        "_Initial Message (click to expand)_", expanded=False
+                    )
+                container.markdown(message["content"])
 
     if prompt := st.chat_input("Query: Ask a question..."):
         st.session_state.messages[scenario_name].append(
             {"role": "user", "content": prompt}
         )
-        with messages:
-            with messages.chat_message("user"):
+        with message_container:
+            with message_container.chat_message("user"):
                 st.markdown(prompt)
 
-            with messages.chat_message("assistant"):
+            with message_container.chat_message("assistant"):
                 stream = client.chat.completions.create(
                     model=model_name,
                     messages=st.session_state.messages[scenario_name],
@@ -53,11 +63,11 @@ def chat_interface(
         )
 
     if not no_reset:
-        st.button("Reset Chat", on_click=reset_chat, key="reset_chat_2")
+        st.button("Reset Chat", on_click=reset_chat, key="reset_chat_bottom")
 
 
 @st.cache_resource
-def initialize(model_name, scenario_name, initial_messages=None):
+def initialize_scenario(model_name, scenario_name, initial_messages=None):
     client = st.session_state.client_lookup[model_name]
     base_url = str(client.base_url).split("/v1")[0]
 

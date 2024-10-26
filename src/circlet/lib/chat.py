@@ -9,6 +9,10 @@ class UserMessage(Message):
     def __init__(self, content: str):
         super().__init__("user", content)
 
+class InitialUserMessage(UserMessage):
+    def __init__(self, content: str):
+        super().__init__(content)
+        self["initial"] = True
 
 class TemplateUserMessage:
     def __init__(self, template: str):

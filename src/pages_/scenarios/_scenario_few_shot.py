@@ -1,13 +1,12 @@
 from email.message import Message
-from pathlib import Path
 from typing import Final
 
 import streamlit as st
-import yaml
 
-from circlet.chat_ui import chat_interface, initialize
-from circlet.lib.chat import SystemMessage, UserMessage
+from circlet.chat_ui import chat_interface, initialize_scenario
+from circlet.lib.chat import SystemMessage, InitialUserMessage
 from circlet.models import LLAMA_8B
+from pages_.scenarios.news import DOCUMENT_YAML
 
 st.title("Information Retrieval")
 st.header("Few-Shot Prompting")
@@ -18,12 +17,6 @@ In this second scenario, the LLM is also given a few query-response examples (_f
 This entails giving the model a short document followed by a few examples of questions and their corresponding answers.
 Here, we only give one example.
 """
-)
-
-DOCUMENT_PATH = Path(__file__).parent / "news/bbc-ce31w8dzepno.yaml"
-DOCUMENT_YAML: dict = yaml.load(
-    DOCUMENT_PATH.open("r"),
-    yaml.Loader,
 )
 
 INITIAL_MESSAGES: Final[list[Message]] = [
@@ -48,14 +41,14 @@ Response: Umbriel was discovered on October 24, 1851.
 Apply the same principle to the given document and answer the questions accordingly.
 """
     ),
-    UserMessage("Document:\n" + DOCUMENT_YAML["text"]),
+    InitialUserMessage("Document:\n" + DOCUMENT_YAML["text"]),
 ]
 
 MODEL_NAME: Final[str] = LLAMA_8B.tag
 SCENARIO_NAME: Final[str] = "scenario_few_shot"
 
 
-print(initialize(MODEL_NAME, SCENARIO_NAME, INITIAL_MESSAGES))
+print(initialize_scenario(MODEL_NAME, SCENARIO_NAME, INITIAL_MESSAGES))
 
 chat_interface(
     SCENARIO_NAME,

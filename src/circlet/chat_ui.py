@@ -7,12 +7,9 @@ from circlet.models import LLAMA_70B
 
 def chat_interface(
     scenario_name: str,
-    model_name: str = LLAMA_70B.tag,
+    model_name: str = LLAMA_70B.name,
     initial_messages=None,
-    no_reset=False,
 ):
-    print(initialize_scenario(model_name, scenario_name, initial_messages))
-
     client = st.session_state.client_lookup[model_name]
     initial_messages = initial_messages or []
     if "messages" not in st.session_state:
@@ -23,9 +20,6 @@ def chat_interface(
 
     if scenario_name not in st.session_state.messages:
         reset_chat()
-
-    if not no_reset:
-        st.button("Reset Chat", on_click=reset_chat, key="reset_chat_top")
 
     message_container = st.container(border=True)
     for message in st.session_state.messages[scenario_name]:
@@ -43,7 +37,15 @@ def chat_interface(
                     )
                 container.markdown(message["content"])
 
-    if prompt := st.chat_input("Query: Ask a question..."):
+    col_chat_input, col_chat_reset = st.columns([0.8, 0.2])
+    col_chat_reset.button(
+        "Reset Chat",
+        type="primary",
+        on_click=reset_chat,
+        use_container_width=True,
+    )
+
+    if prompt := col_chat_input.chat_input("Query: Ask a question..."):
         st.session_state.messages[scenario_name].append(
             {"role": "user", "content": prompt}
         )
@@ -62,8 +64,7 @@ def chat_interface(
             {"role": "assistant", "content": response}
         )
 
-    if not no_reset:
-        st.button("Reset Chat", on_click=reset_chat, key="reset_chat_bottom")
+    initialize_scenario(model_name, scenario_name, initial_messages)
 
 
 @st.cache_resource

@@ -2,7 +2,6 @@ import streamlit as st
 
 from pages_.scenarios.news import DOCUMENT_YAML
 
-st.title("Information Retrieval")
 st.header("Example Document")
 
 st.markdown(

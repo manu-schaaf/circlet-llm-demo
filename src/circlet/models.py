@@ -4,8 +4,8 @@ from typing import Final
 
 @dataclass
 class Model:
-    tag: str
     name: str
+    pretty: str
     description: str
     n_ctx: int = 4096
 
@@ -52,5 +52,5 @@ MODELS: Final[list[Model]] = [
     REFLECTION,
     # NEMOTRON_MINI,
 ]
-MODELS_BY_TAG: Final[dict[str, Model]] = {model.tag: model for model in MODELS}
 MODELS_BY_NAME: Final[dict[str, Model]] = {model.name: model for model in MODELS}
+MODELS_BY_PRETTY: Final[dict[str, Model]] = {model.pretty: model for model in MODELS}

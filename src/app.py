@@ -1,7 +1,7 @@
 import streamlit as st
 from openai import OpenAI
 
-from circlet.models import MODELS_BY_TAG
+from circlet.models import MODELS_BY_NAME
 
 if "client_gondor" not in st.session_state:
     st.session_state.client_gondor = OpenAI(
@@ -19,36 +19,26 @@ if "client_lookup" not in st.session_state:
             # if not "8b" in name
             # else st.session_state.client_geltlin
         )
-        for name in MODELS_BY_TAG
+        for name in MODELS_BY_NAME
     }
 
-
-# status = Response.process(
-#     get("http://gondor.hucompute.org:11434/v1/models", timeout=10)
-# )
-# if status.ok() and st.session_state.get("client_gondor") is not None:
-#     if "status_ok" not in st.session_state:
-#         st.toast("Connection Established!", icon="🎉")
-#         st.session_state.status_ok = True
-# else:
-#     err_msg = (
-#         "Could not connect to the LLM server."
-#         if status.ok()
-#         else "Could not establish a client connection."
-#     )
-#     st.toast("Error: ", icon="🚨")
+st.title("Information Retrieval")
 
 page_home = st.Page(
-    "pages_/introduction.py",
-    title="Introduction",
+    "pages_/introduction/0_motivation.py",
+    icon="🏠",
+    title="Motivation",
+    default=True,
 )
 page_article = st.Page(
-    "pages_/example_document.py",
+    "pages_/introduction/1_example_document.py",
+    icon="📰",
     title="Example Document",
 )
 page_scenario_zero = st.Page(
     "pages_/scenarios/1_zero_shot.py",
-    title="1. Zero-Shot Prompting",
+    icon="🎯",
+    title="Zero-Shot Prompting",
 )
 # page_scenario_2 = st.Page(
 #     "pages_/scenarios/scenario_few_shot.py",
@@ -56,26 +46,27 @@ page_scenario_zero = st.Page(
 # )
 page_scenario_cot = st.Page(
     "pages_/scenarios/2_chain_of_thoughts.py",
-    title="2. Chain-of-Thought Prompting",
+    icon="🔗",
+    title="Chain-of-Thoughts Prompting",
 )
-page_scenario_ff = st.Page(
-    "pages_/scenarios/3_1_free_form.py",
-    title="3.1. Free-Form: Design Your Own Prompt",
-)
-page_scenario_ff_chat = st.Page(
-    "pages_/scenarios/3_2_free_form_chat.py",
-    title="3.2. Free-Form: Chat",
+page_scenario_dyop = st.Page(
+    "pages_/scenarios/3_dyop.py",
+    icon="🎨",
+    title="Design Your Own Prompt",
 )
 
 pg = st.navigation(
-    [
-        page_home,
-        page_article,
-        page_scenario_zero,
-        # page_scenario_2,
-        page_scenario_cot,
-        page_scenario_ff,
-        page_scenario_ff_chat,
-    ]
+    {
+        "Introduction": [
+            page_home,
+            page_article,
+        ],
+        "Scenarios": [
+            page_scenario_zero,
+            # page_scenario_2,
+            page_scenario_cot,
+            page_scenario_dyop,
+        ],
+    }
 )
 pg.run()

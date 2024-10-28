@@ -44,7 +44,7 @@ Apply the same principle to the given document and answer the questions accordin
     InitialUserMessage("Document:\n" + DOCUMENT_YAML["text"]),
 ]
 
-MODEL_NAME: Final[str] = LLAMA_8B.tag
+MODEL_NAME: Final[str] = LLAMA_8B.name
 SCENARIO_NAME: Final[str] = "scenario_few_shot"
 
 

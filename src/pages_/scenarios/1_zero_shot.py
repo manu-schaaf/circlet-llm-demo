@@ -8,7 +8,8 @@ from circlet.lib.chat import InitialUserMessage, SystemMessage
 from circlet.models import LLAMA_8B
 from pages_.scenarios.news import DOCUMENT_YAML
 
-st.title("Information Retrieval")
+SCENARIO_NAME: Final[str] = "scenario_zero_shot"
+
 st.header("Zero-Shot Prompting")
 
 st.markdown(
@@ -25,29 +26,25 @@ To circumvent this &mdash; as our [example document](/example_document) is about
 
 **Example Questions**
 1. What is the given document about?
-2. Who has the lead in US presidential election polls?
-3. What is the history of the swing states in the US presidential election?
+2. Who has the lead in the US presidential election polls?
+3. What is the role of the swing states in the US presidential election?
 """
 )
 
 INITIAL_MESSAGES: Final[list[Message]] = [
     SystemMessage(
-        """
-You are a helpful assistant for Information Retrieval.
+        """You are a helpful assistant for Information Retrieval.
 Given a `Document` and a `Query`, you need to find the most relevant information in the document.
 Always answer to the best of your knowledge using the provided document.
 Assume that the document is a reliable source of information and up-to-date.
-You must not deflect or refuse to answer questions, unless the information is not provided in the given document.
-"""
+You must not deflect or refuse to answer questions, unless the information is not provided in the given document."""
     ),
-    InitialUserMessage("Document:\n" + DOCUMENT_YAML["text"]),
+    InitialUserMessage("<document>\n\n" + DOCUMENT_YAML["text"] + "\n\n</document>"),
 ]
 
-MODEL_NAME: Final[str] = LLAMA_8B.tag
-SCENARIO_NAME: Final[str] = "scenario_zero_shot"
 
 chat_interface(
     SCENARIO_NAME,
     initial_messages=INITIAL_MESSAGES,
-    model_name=MODEL_NAME,
+    model_name=LLAMA_8B.name,
 )

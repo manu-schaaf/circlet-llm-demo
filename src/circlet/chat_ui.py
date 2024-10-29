@@ -77,7 +77,7 @@ def initialize_scenario(model_name, scenario_name, initial_messages=None):
             f"{base_url}/api/generate",
             json={
                 "model": model_name,
-                "keep_alive": 3600 * 24 * 5,
+                "keep_alive": 300,
             },
             timeout=600,
         )

@@ -39,7 +39,7 @@ Always answer to the best of your knowledge using the provided document.
 Assume that the document is a reliable source of information and up-to-date.
 You must not deflect or refuse to answer questions, unless the information is not provided in the given document."""
     ),
-    InitialUserMessage("<document>\n\n" + DOCUMENT_YAML["text"] + "\n\n</document>"),
+    InitialUserMessage("Document:\n" + DOCUMENT_YAML["text"]),
 ]
 
 

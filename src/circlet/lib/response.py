@@ -37,7 +37,7 @@ class Response:
                 "text": response.text,
             }
             try:
-                Err(err | {"json": response.json()})
+                return Err(err | {"json": response.json()})
             except:
                 return Err(err)
 

@@ -1,26 +1,20 @@
+import os
+from typing import Final
+
 import streamlit as st
 from openai import OpenAI
 
-from circlet.models import MODELS_BY_NAME
+OPENAI_BASE_URL: Final[str] = os.environ.get(
+    "OPENAI_BASE_URL", "http://localhost:11434/v1/"
+)
+OPENAI_API_KEY: Final[str] = os.environ.get("OPENAI_API_KEY", "sk-1234567890")
 
-if "client_gondor" not in st.session_state:
-    st.session_state.client_gondor = OpenAI(
-        base_url="http://gondor.hucompute.org:11434/v1/", api_key="sk-1234567890"
+if "openai_client" not in st.session_state:
+    st.session_state.openai_client = OpenAI(
+        base_url=OPENAI_BASE_URL,
+        api_key=OPENAI_API_KEY,
     )
-# if "client_geltlin" not in st.session_state:
-#     st.session_state.client_geltlin = OpenAI(
-#         base_url="http://geltlin.hucompute.org:11434/v1/", api_key="sk-1234567890"
-#     )
 
-if "client_lookup" not in st.session_state:
-    st.session_state.client_lookup = {
-        name: (
-            st.session_state.client_gondor
-            # if not "8b" in name
-            # else st.session_state.client_geltlin
-        )
-        for name in MODELS_BY_NAME
-    }
 
 st.title("Information Retrieval")
 

@@ -10,7 +10,7 @@ def chat_interface(
     model_name: str = LLAMA_70B.name,
     initial_messages=None,
 ):
-    client = st.session_state.client_lookup[model_name]
+    client = st.session_state.openai_client
     initial_messages = initial_messages or []
     if "messages" not in st.session_state:
         st.session_state.messages = {}
@@ -69,7 +69,7 @@ def chat_interface(
 
 @st.cache_resource
 def initialize_scenario(model_name, scenario_name, initial_messages=None):
-    client = st.session_state.client_lookup[model_name]
+    client = st.session_state.openai_client
     base_url = str(client.base_url).split("/v1")[0]
 
     response = Response.process(
